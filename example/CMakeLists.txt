@@ -55,3 +55,5 @@ if(IS_COMPILER_GCC_LIKE)
   add_example(transitions example_transitions transitions.cpp)
   add_example(visitor example_visitor visitor.cpp)
 endif()
+
+add_example(entry_actions example_entry_actions entry_actions.cpp)
