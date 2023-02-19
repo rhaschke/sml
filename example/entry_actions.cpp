@@ -8,8 +8,7 @@ struct next {};
 
 // states
 struct s1 {
-  int entered = 0;
-  void on_entry() { std::cout << "entered: " << ++entered << " times\n"; }
+  void on_entry() { std::cout << "entered\n"; }
 };
 struct s2 {};
 
@@ -29,7 +28,7 @@ class Machine {
 
 int main(int, char**) {
   Machine m;
-  sml::sm<Machine> sm(m);
+  sml::sm<Machine> sm(m, s1{});
 
   while (true) {
     std::string input;
