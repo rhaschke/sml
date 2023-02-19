@@ -26,10 +26,11 @@ class Machine {
     /* clang-format off */
     return make_transition_table(
       * "idle"_s      + on_entry<_> / print  // lambda expression works
-      , state<s1>     + on_entry<_> / &Self::static_print // static method fails
-      , state<s2>     + on_entry<_> / &free_print// free function fails
+      // free functions and static members need to be wrapped
+      , state<s1>     + on_entry<_> / wrap(Self::static_print)
+      , state<s2>     + on_entry<_> / wrap(free_print)
       , "idle"_s      + event<next> = state<s1>
-		, state<s1>     + event<next> = state<s2>
+      , state<s1>     + event<next> = state<s2>
       , state<s2>     + event<next> = state<s1>
     );
     /* clang-format on */
