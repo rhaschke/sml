@@ -8,7 +8,8 @@ struct next {};
 
 // states
 struct s1 {
-  void on_entry() { std::cout << "member triggered\n"; }
+  int entered = 0;
+  void on_entry() { std::cout << "entered: " << ++entered << " times\n"; }
 };
 struct s2 {};
 
@@ -19,8 +20,8 @@ class Machine {
     /* clang-format off */
     return make_transition_table(
       * state<s1>     + on_entry<_> / &s1::on_entry
-      , state<s1>     + event<next> = state<s2>
-      , state<s2>     + event<next> = state<s1>
+      , state<s1>     + event<next>                 = state<s2>
+      , state<s2>     + event<next>                 = state<s1>
     );
     /* clang-format on */
   }
