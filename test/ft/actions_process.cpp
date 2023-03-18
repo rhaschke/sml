@@ -108,6 +108,41 @@ test process_event_from_substate = [] {
   expect(1 == c_.a_called);
 };
 
+test back_process_event_from_substate = [] {
+  struct sub {
+    auto operator()() const noexcept {
+      using namespace sml;
+      auto back_process = [](back::process<e2> process) { process(e2{}); };
+      // clang-format off
+      return make_transition_table(
+        * s1 + event<e1> / (back_process, process(e3{}))
+        , X  + event<e2> = X  // BUG: event not known otherwise
+      );
+      // clang-format on
+    }
+  };
+
+  struct c {
+    auto operator()() noexcept {
+      using namespace sml;
+      // clang-format off
+      return make_transition_table(
+        * state<sub> + event<e2> / [this] { received += "e2|"; }
+        , state<sub> + event<e3> / [this] { received += "e3|"; }
+      );
+      // clang-format on
+    }
+
+    std::string received;
+  };
+
+  sml::sm<c, sml::process_queue<std::queue>> sm;
+  sm.process_event(e1{});
+
+  const c& c_ = sm;
+  expect(c_.received == "e2|e3|");  // BUG: only e3 is received
+};
+
 test queue_process_events = [] {
   struct c {
     std::vector<int> calls;
